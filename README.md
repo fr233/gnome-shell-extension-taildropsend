@@ -4,5 +4,5 @@ gnome-shell-extension-taildropsend is a simple extension for sending files throu
 
 ### Known issues
 * No progress report.
-* Receiving fucntion doesn't work unless you must setuid tailscale(1).
+* Receiving fucntion doesn't work unless you setuid tailscale(1).
 
