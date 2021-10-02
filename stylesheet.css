@@ -1,0 +1,16 @@
+.popup-menu-item .ci-action-btn StIcon {
+    icon-size: 16px;
+}
+
+.tds-menu-section {
+    max-height: 450px;
+    width: 300px;
+}
+
+.tds-appname-label{
+    font-size: 2em;
+}
+
+.dim {
+    color: #999;
+}

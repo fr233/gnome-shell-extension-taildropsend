@@ -1,0 +1,14 @@
+<schemalist gettext-domain="gnome-shell-extensions">
+  <schema id="org.gnome.shell.extensions.taildropsend"
+      path="/org/gnome/shell/extensions/taildropsend/">
+
+    <key name="default-receive-path" type="s">
+      <default>"$HOME"</default>
+        <summary>which directory to receive files</summary>
+        <description>
+            some description
+        </description>
+    </key>
+
+  </schema>
+</schemalist>

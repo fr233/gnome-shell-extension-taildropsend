@@ -1,0 +1,9 @@
+{
+  "name": "TailDrop Send",
+  "description": "Send files via tailscale",
+  "uuid": "taildropsendxuwuming2014@outlook.com",
+  "shell-version": [
+    "40"
+  ],
+  "url": "https://github.com/fr233/gnome-shell-extension-taildropsend"
+}
