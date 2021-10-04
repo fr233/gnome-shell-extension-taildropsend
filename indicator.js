@@ -15,21 +15,21 @@
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
- 
-const GETTEXT_DOMAIN = 'taildrop-send-extension';
 
 const { GObject, St , GLib } = imports.gi;
 
-const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-const _ = Gettext.gettext;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
-const Lang       = imports.lang;
 const Clutter    = imports.gi.Clutter;
+
+const Me = ExtensionUtils.getCurrentExtension();
+const Conf = Me.imports.conf;
+const Gettext = imports.gettext.domain(Conf.GETTEXT_DOMAIN);
+const _ = Gettext.gettext;
 
 let MAX_ENTRY_LENGTH     = 50;
 
@@ -156,11 +156,13 @@ class Indicator extends PanelMenu.Button {
 
     addOtherEntry(buffer, which){
         let menuItem = this.makeEntry(buffer, 'object-select-symbolic');
-        menuItem.deletePressId = menuItem.icoBtn.connect('button-press-event',
-            Lang.bind(this, function () {
-                this.removeEntry(menuItem);
-            })
-        );
+
+        let cb = ()=>{
+            this.removeEntry(menuItem);
+        }
+        cb.bind(this);
+        menuItem.deletePressId = menuItem.icoBtn.connect('button-press-event', cb);
+        
         if(which == "sent"){
             this.sentSection.addMenuItem(menuItem, 0);
         } else if(which == "failed"){
@@ -184,11 +186,13 @@ class Indicator extends PanelMenu.Button {
     
     addReceivedEntry(buffer){
         let menuItem = this.makeEntry(buffer, 'object-select-symbolic');
-        menuItem.deletePressId = menuItem.icoBtn.connect('button-press-event',
-            Lang.bind(this, function () {
-                this.removeEntry(menuItem);
-            })
-        );
+
+        let cb = ()=>{
+            this.removeEntry(menuItem);
+        }
+        cb.bind(this);
+
+        menuItem.deletePressId = menuItem.icoBtn.connect('button-press-event', cb);
         this.receivedSection.addMenuItem(menuItem, 0);
     }
     

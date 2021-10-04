@@ -17,31 +17,29 @@
  */
 
 
-const GETTEXT_DOMAIN = 'taildrop-send-extension';
-
-const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
-const _ = Gettext.gettext;
-
 const { GObject, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 
 
-const Lang       = imports.lang;
 
 const Me = ExtensionUtils.getCurrentExtension();
-const getSchema = Me.imports.settings.getSchema;
 
 const Indicator = Me.imports.indicator.Indicator;
 const TailDropSendService = Me.imports.TailDropSendService.TailDropSendService;
 
+const Conf = Me.imports.conf;
 const Utils = Me.imports.utils;
 
 
+const Gettext = imports.gettext.domain(Conf.GETTEXT_DOMAIN);
+const _ = Gettext.gettext;
+
 class SendAdapter {
-    constructor(indicator){
+    constructor(indicator, settings){
         this.indicator = indicator;
+        this.settings = settings;
         this.sending_cnt = 0;
         this.sending_ctx = new Map();
     }
@@ -68,9 +66,10 @@ class SendAdapter {
     }
 
     prepare(cancellable, filepath_arr){
-        let cb = Lang.bind(this, function () {
+        let cb = (() => {
             cancellable.cancel();
         });
+        cb.bind(this);
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             let menuItem = this.indicator.addSendingEntry(filepath_arr.join(" "), cb);
             this.sending_ctx.set(cancellable, menuItem);
@@ -112,8 +111,9 @@ class SendAdapter {
 
 
 class RecvAdapter {
-    constructor(indicator){
+    constructor(indicator, settings){
         this.indicator = indicator;
+        this.settings = settings;
         this.sending_cnt = 0;
     }
 
@@ -123,7 +123,7 @@ class RecvAdapter {
 
     get_dst(){
         let home_dir = GLib.get_home_dir();
-        let recvpath = Settings.get_string("default-receive-path");
+        let recvpath = this.settings.get_string("default-receive-path");
         if(recvpath.startsWith('$HOME') || recvpath.startsWith('/')){
             let realpath = recvpath.replace(/\$HOME/, home_dir);
             return realpath;
@@ -142,18 +142,12 @@ class RecvAdapter {
     }
 
     prepare(cancellable){
-        // let cb = Lang.bind(this, function () {
-        //     cancellable.cancel();
-        // });
-        // GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-        //     return GLib.SOURCE_REMOVE;
-        // });
+        let cb = ()=>{
+            cancellable.cancel();
+        };
+        cb.bind(this);
 
-        this._settingsChangedId = Settings.connect('changed',
-            Lang.bind(this, ()=>{
-                cancellable.cancel();
-            })
-        );
+        this._settingsChangedId = this.settings.connect('changed', cb);
 
         this._countUp();
     }
@@ -161,7 +155,7 @@ class RecvAdapter {
     _disconnectSettings() {
         if (!this._settingsChangedId)
             return;
-        Settings.disconnect(this._settingsChangedId);
+        this.settings.disconnect(this._settingsChangedId);
         this._settingsChangedId = null;
     }
 
@@ -198,20 +192,20 @@ class RecvAdapter {
     }
 }
 
-let Settings = getSchema();
 
 
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
+        ExtensionUtils.initTranslations(Conf.GETTEXT_DOMAIN);
     }
 
     enable() {
     	Utils.install_fileManager_script();
-        this._indicator = new Indicator(Settings);
-        let sendAdapter = new SendAdapter(this._indicator);
-        let recvAdapter= new RecvAdapter(this._indicator);
+        let settings = ExtensionUtils.getSettings(Conf.SCHEMA_NAME);
+        this._indicator = new Indicator(settings);
+        let sendAdapter = new SendAdapter(this._indicator, settings);
+        let recvAdapter= new RecvAdapter(this._indicator, settings);
 
         this.taildropSendService = new TailDropSendService(sendAdapter, recvAdapter);
         Main.panel.addToStatusArea(this._uuid, this._indicator);
