@@ -2,6 +2,8 @@
   "name": "TailDrop Send",
   "description": "Send files via tailscale",
   "uuid": "taildropsendxuwuming2014@outlook.com",
+  "settings-schema": "org.gnome.shell.extensions.taildropsend",
+  "gettext-domain": "taildrop-send-extension",
   "shell-version": [
     "40"
   ],

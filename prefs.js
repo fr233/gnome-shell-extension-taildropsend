@@ -23,7 +23,6 @@ const Gtk = imports.gi.Gtk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Conf = Me.imports.conf;
 
 
 function init() {
@@ -31,7 +30,7 @@ function init() {
 }
 
 function buildPrefsWidget() {
-    let settings = ExtensionUtils.getSettings(Conf.SCHEMA_NAME);
+    let settings = ExtensionUtils.getSettings();
     let prefsWidget = new Gtk.Grid({
         column_spacing: 12,
         row_spacing: 12,

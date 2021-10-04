@@ -29,11 +29,10 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Indicator = Me.imports.indicator.Indicator;
 const TailDropSendService = Me.imports.TailDropSendService.TailDropSendService;
 
-const Conf = Me.imports.conf;
 const Utils = Me.imports.utils;
 
 
-const Gettext = imports.gettext.domain(Conf.GETTEXT_DOMAIN);
+const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Gettext.gettext;
 
 class SendAdapter {
@@ -197,12 +196,12 @@ class RecvAdapter {
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
-        ExtensionUtils.initTranslations(Conf.GETTEXT_DOMAIN);
+        ExtensionUtils.initTranslations();
     }
 
     enable() {
     	Utils.install_fileManager_script();
-        let settings = ExtensionUtils.getSettings(Conf.SCHEMA_NAME);
+        let settings = ExtensionUtils.getSettings();
         this._indicator = new Indicator(settings);
         let sendAdapter = new SendAdapter(this._indicator, settings);
         let recvAdapter= new RecvAdapter(this._indicator, settings);

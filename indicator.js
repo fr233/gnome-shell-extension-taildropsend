@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { GObject, St , GLib } = imports.gi;
+const { GObject, St, GLib } = imports.gi;
 
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -27,8 +27,7 @@ const PopupMenu = imports.ui.popupMenu;
 const Clutter    = imports.gi.Clutter;
 
 const Me = ExtensionUtils.getCurrentExtension();
-const Conf = Me.imports.conf;
-const Gettext = imports.gettext.domain(Conf.GETTEXT_DOMAIN);
+const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Gettext.gettext;
 
 let MAX_ENTRY_LENGTH     = 50;
